@@ -300,11 +300,6 @@ function drawList(){
       const rr=document.createElement("div"); rr.className="rmrow"; rr.appendChild(delBtn(n)); inner.appendChild(rr);
       div.appendChild(inner);
     }else{
-        const b=document.createElement("button"); b.className="open"; b.textContent="Open it"; b.onclick=()=>openNote(n);
-        div.appendChild(b);
-      }
-      sub.appendChild(delBtn(n)); div.appendChild(sub);
-    }else{
       div.className="note "+(n.from==="d"?"d":"t");
       const p=document.createElement("p");
       if(n.sealed){const t=document.createElement("span");t.className="owlabel";t.textContent=n.openWhen?`Open when ${n.openWhen}`:"Sealed note";div.appendChild(t);}
