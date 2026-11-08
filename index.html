@@ -98,6 +98,38 @@
   .note .del{background:none;border:none;box-shadow:none;color:var(--muted);font-size:12px;padding:0;text-decoration:underline}
   .empty{color:var(--muted);font-size:14px;text-align:center;padding:18px 0;line-height:1.6}
   .banner{display:none;background:#fff4e6;border-radius:14px;padding:12px 14px;font-size:13px;margin-top:16px;line-height:1.5;color:#8a5a1f}
+
+  /* Overlays */
+  .gate{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(251,232,234,.96)}
+  .gate.show{display:flex}
+  .gate .box{background:var(--card);border-radius:24px;padding:30px 24px;max-width:360px;width:100%;text-align:center;box-shadow:0 14px 40px rgba(224,121,143,.25)}
+  .gate h2{font-size:40px;margin-bottom:8px}
+  .gate p{color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:18px}
+  .gate input{width:100%;font-family:inherit;font-size:18px;text-align:center;letter-spacing:2px;padding:13px;border:2px solid var(--line);border-radius:14px;margin-bottom:14px;color:var(--ink)}
+  .gate input:focus{outline:none;border-color:var(--rose)}
+  .gate .err{color:#c0475f;font-size:13px;min-height:18px;margin-top:10px}
+  .gate .pick{display:flex;gap:10px}
+  .gate .pick button{flex:1}
+  .hello{text-align:center;font-size:13px;color:var(--muted);margin-top:12px}
+  .hello a{color:var(--rose);cursor:pointer;text-decoration:underline}
+  .newbanner{display:none;text-align:center;margin:16px auto 0;background:var(--rose);color:#fff;border-radius:999px;padding:10px 18px;font-size:14px;font-weight:500;width:fit-content;box-shadow:0 6px 16px rgba(224,121,143,.35);animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
+  .sticker{display:inline-block;background:var(--rose);color:#fff;font-family:Poppins,sans-serif;font-size:10px;font-weight:600;letter-spacing:.5px;padding:2px 8px;border-radius:999px;margin-left:8px;vertical-align:middle}
+
+  /* Open-when */
+  .toggle{display:flex;align-items:center;gap:10px;margin-top:16px;font-size:14px;cursor:pointer;user-select:none}
+  .toggle input{width:18px;height:18px;accent-color:var(--rose)}
+  .sealed-fields{display:none}
+  .sealed-fields.show{display:block}
+  .ow-prefix{display:flex;align-items:center;gap:8px}
+  .ow-prefix span{font-family:Caveat,cursive;font-size:24px;color:var(--rose);white-space:nowrap}
+  .ow-prefix input{flex:1;font-family:inherit;font-size:15px;padding:12px 14px;border:2px solid var(--line);border-radius:14px}
+  .envelope{position:relative;border-radius:10px;padding:26px 18px 16px;text-align:center;background:#fff6e9;border:2px dashed #f0c9a0;box-shadow:0 6px 14px rgba(74,44,53,.08)}
+  .envelope::before{content:"";position:absolute;top:0;left:0;right:0;height:46px;background:linear-gradient(160deg,transparent 49%,#f6dcc0 50%) left/50% 100% no-repeat,linear-gradient(200deg,transparent 49%,#f6dcc0 50%) right/50% 100% no-repeat;border-radius:10px 10px 0 0;opacity:.7}
+  .envelope .seal{position:relative;width:34px;height:34px;border-radius:50%;background:var(--rose);margin:0 auto 10px;box-shadow:0 3px 8px rgba(224,121,143,.4)}
+  .envelope .ow{font-family:Caveat,cursive;font-size:28px;line-height:1.1}
+  .envelope .row{justify-content:center;gap:12px;flex-wrap:wrap}
+  .envelope button.open{margin-top:12px;padding:9px 20px;font-size:14px}
+  .owlabel{font-family:Poppins,sans-serif;font-size:11px;color:var(--rose);font-weight:600;letter-spacing:.5px;text-transform:uppercase;display:block;margin-bottom:4px}
 </style>
 </head>
 <body>
@@ -106,11 +138,26 @@
 <svg class="float" viewBox="0 0 24 24" style="top:22%;right:8%;width:18px;fill:#8ea8d8;animation-delay:-3s"><use href="#h"/></svg>
 <svg class="float" viewBox="0 0 24 24" style="top:58%;left:4%;width:16px;fill:#8ea8d8;animation-delay:-5s"><use href="#h"/></svg>
 <svg class="float" viewBox="0 0 24 24" style="top:78%;right:6%;width:24px;fill:#e0798f;animation-delay:-2s"><use href="#h"/></svg>
+<div class="gate" id="lockGate"><div class="box">
+  <h2>Our Jar</h2>
+  <p>This jar is just for two. Enter your code to open it.</p>
+  <input id="codeIn" type="password" autocomplete="off" placeholder="Code">
+  <button id="codeBtn" style="width:100%">Open the jar</button>
+  <div class="err" id="codeErr"></div>
+</div></div>
+
+<div class="gate" id="whoGate"><div class="box">
+  <h2>Who are you?</h2>
+  <p>Pick once. This phone will remember you.</p>
+  <div class="pick"><button data-me="t">Latifat</button><button data-me="d" class="ghost">David</button></div>
+</div></div>
+
 <div class="wrap">
   <header>
     <h1>Our Jar</h1>
     <p class="sub">Little notes for each other. Sweet things, thank yous,<br>and moments worth keeping. Pull one out whenever you need it.</p>
   </header>
+  <div class="newbanner" id="newBanner"></div>
 
   <div class="jar-stage">
     <div class="jar" aria-hidden="true">
@@ -143,8 +190,15 @@
     </div>
     <label for="text">Your note</label>
     <textarea id="text" maxlength="400" placeholder="Thank you for the chocolate on our walk today."></textarea>
-    <label for="date">When (optional)</label>
-    <input type="date" id="date">
+    <label class="toggle"><input type="checkbox" id="sealIn"> Make it an "Open when" note</label>
+    <div class="sealed-fields" id="sealFields">
+      <label for="owIn">It stays folded until…</label>
+      <div class="ow-prefix"><span>Open when</span><input id="owIn" maxlength="60" placeholder="you miss me"></div>
+      <label for="unlockIn">Or lock it until a date (optional)</label>
+      <input type="date" id="unlockIn">
+    </div>
+    <div id="dateWrap"><label for="date">When did it happen? (optional)</label>
+    <input type="date" id="date"></div>
     <div class="form-actions"><button id="saveBtn">Fold it in</button></div>
     <div class="status" id="status"></div>
   </section>
@@ -153,11 +207,13 @@
     <h2>Everything in the jar</h2>
     <div class="filters" id="filters">
       <button class="on" data-f="all">All</button>
-      <button data-f="d">From David</button>
-      <button data-f="t">From Latifat</button>
+      <button data-f="for">For you</button>
+      <button data-f="from">From you</button>
+      <button data-f="sealed">Open when</button>
     </div>
     <div id="list"><p class="empty">Loading…</p></div>
   </section>
+  <p class="hello" id="hello"></p>
 </div>
 
 <script type="module">
@@ -170,33 +226,28 @@ const firebaseConfig = {
   appId: "1:712608582825:web:a8d62397964fd1083aedb8"
 };
 
-const NAMES={t:"Latifat",d:"David"};
-const TO={t:"David",d:"Latifat"};
-const label=n=>NAMES[n.from]?`From ${NAMES[n.from]} to ${TO[n.from]}`:"From Someone";
-const SEEDS=[
- {id:"mem1",text:"Our first date was Amala. I still think about that day.",createdAt:10},
- {id:"mem2",text:"The chocolate bars on our weekend walks. You never wait for me to ask.",createdAt:9},
- {id:"mem3",text:"That time you bought me chocolate in the middle of class. Cutest thing ever.",createdAt:8},
- {id:"mem4",text:"Our movie date. One of my favourite memories with you.",createdAt:7},
- {id:"mem5",text:"You always apologise when you get something wrong.",createdAt:6},
- {id:"mem6",text:"Every time my insecurities come up, you patiently remind me why we're doing this the way we are.",createdAt:5},
- {id:"mem7",text:"We talk about everything, even the hardest things. I feel safe telling you anything.",createdAt:4},
- {id:"mem8",text:"I love your smile. It makes everything feel lighter.",createdAt:3},
- {id:"mem9",text:"Your long hugs. My favourite place to be.",createdAt:2},
- {id:"mem10",text:"You're the sweetest person I know. Sometimes I really think God sent you.",createdAt:1}
-].map(n=>({...n,from:"t",date:""}));
-const OLD=["seed1","seed2","seed3","seed4","seed5","thanks1","thanks2","thanks3","thanks4","thanks5"];
-const KEY="our-jar-notes";
-function keep(){try{localStorage.setItem(KEY,JSON.stringify(notes));}catch(e){}}
-function loadKept(){try{const v=JSON.parse(localStorage.getItem(KEY));return Array.isArray(v)?v:null;}catch(e){return null;}}
-let notes=[], who="t", filter="all", api=null, local=false, lastPulled=null, armed=null;
+const NAMES={t:"Latifat",d:"David"}, TO={t:"David",d:"Latifat"};
 const $=id=>document.getElementById(id);
+const LS={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+let fs=null, db=null, jar=null, unsub=null;
+let notes=[], me=LS.get("jar-me"), who=me||"t", filter="all", lastPulled=null, armed=null;
+let seenAt=Number(LS.get("jar-seen-"+(me||"x"))||0), newIds=new Set(), firstLoad=true;
+let opened=new Set(JSON.parse(LS.get("jar-opened")||"[]"));
 
-function fmtDate(n){
-  const s=n.date||(n.createdAt>1000?new Date(n.createdAt).toISOString().slice(0,10):"");
-  if(!s) return "";
-  return new Date(s+"T12:00:00").toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"});
+const today=()=>new Date().toISOString().slice(0,10);
+const fmt=s=>s?new Date(s+"T12:00:00").toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"}):"";
+const noteDate=n=>n.date||(n.createdAt>1e6?new Date(n.createdAt).toISOString().slice(0,10):"");
+const label=n=>NAMES[n.from]?`From ${NAMES[n.from]} to ${TO[n.from]}`:"From Someone";
+const meta=n=>`${label(n)}${fmt(noteDate(n))?" · "+fmt(noteDate(n)):""}`;
+const isLocked=n=>n.sealed&&n.unlockOn&&n.unlockOn>today();
+const isClosed=n=>n.sealed&&!opened.has(n.id);
+
+async function hash(code){
+  const buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode("our-jar:"+code.trim().toLowerCase()));
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
 }
+
+/* ---------- render ---------- */
 function drawSlips(){
   const box=$("slips"); box.innerHTML="";
   notes.slice(0,40).forEach((n,i)=>{
@@ -210,73 +261,179 @@ function drawSlips(){
   });
   const c=notes.length, dc=notes.filter(n=>n.from==="d").length;
   $("count").innerHTML=c?`<b>${c}</b> ${c===1?"note":"notes"} inside · ${dc} from David · ${c-dc} from Latifat`:"The jar is empty. Add the first note below.";
-  $("pullBtn").disabled=!c;
+  $("pullBtn").disabled=!notes.some(n=>!isClosed(n));
+}
+function matches(n){
+  if(filter==="all") return true;
+  if(filter==="sealed") return !!n.sealed;
+  if(!me) return true;
+  return filter==="for"? n.from!==me : n.from===me;
+}
+function delBtn(n){
+  const del=document.createElement("button"); del.className="del";
+  del.textContent=armed===n.id?"Tap again to remove":"Remove";
+  del.onclick=()=>{ if(armed===n.id){armed=null;removeNote(n.id);} else {armed=n.id;drawList();} };
+  return del;
 }
 function drawList(){
   const list=$("list"); list.innerHTML="";
-  const items=notes.filter(n=>filter==="all"||n.from===filter);
-  if(!items.length){const p=document.createElement("p");p.className="empty";p.textContent="Nothing here yet.";list.appendChild(p);return;}
+  const items=notes.filter(matches);
+  if(!items.length){const p=document.createElement("p");p.className="empty";p.textContent=filter==="sealed"?"No \"Open when\" notes yet.":"Nothing here yet.";list.appendChild(p);return;}
   items.forEach(n=>{
-    const div=document.createElement("div"); div.className="note "+(n.from==="d"?"d":"t");
-    const p=document.createElement("p"); p.textContent=n.text;
+    const div=document.createElement("div");
     const row=document.createElement("div"); row.className="row";
-    const meta=document.createElement("span"); meta.textContent=`${label(n)}${fmtDate(n)?" · "+fmtDate(n):""}`;
-    const del=document.createElement("button"); del.className="del";
-    del.textContent=armed===n.id?"Tap again to remove":"Remove";
-    del.onclick=()=>{ if(armed===n.id){armed=null;removeNote(n.id);} else {armed=n.id;drawList();} };
-    row.append(meta,del); div.append(p,row); list.appendChild(div);
+    const m=document.createElement("span"); m.textContent=meta(n);
+    if(newIds.has(n.id)){const st=document.createElement("span");st.className="sticker";st.textContent="NEW";m.appendChild(st);}
+    if(isClosed(n)){
+      div.className="envelope";
+      const seal=document.createElement("div"); seal.className="seal";
+      const ow=document.createElement("div"); ow.className="ow"; ow.textContent=n.openWhen?`Open when ${n.openWhen}`:"A sealed note";
+      const sub=document.createElement("div"); sub.className="row"; sub.appendChild(m);
+      div.append(seal,ow);
+      if(isLocked(n)){
+        const l=document.createElement("p"); l.className="empty"; l.style.padding="8px 0 0"; l.textContent=`Opens on ${fmt(n.unlockOn)}`; div.appendChild(l);
+      }else{
+        const b=document.createElement("button"); b.className="open"; b.textContent="Open it"; b.onclick=()=>openNote(n);
+        div.appendChild(b);
+      }
+      sub.appendChild(delBtn(n)); div.appendChild(sub);
+    }else{
+      div.className="note "+(n.from==="d"?"d":"t");
+      const p=document.createElement("p");
+      if(n.sealed){const t=document.createElement("span");t.className="owlabel";t.textContent=n.openWhen?`Open when ${n.openWhen}`:"Sealed note";div.appendChild(t);}
+      p.textContent=n.text;
+      row.append(m,delBtn(n)); div.append(p,row);
+    }
+    list.appendChild(div);
   });
 }
 function render(){drawSlips();drawList();}
-function pull(){
-  if(!notes.length) return;
-  let pick; do{pick=notes[Math.floor(Math.random()*notes.length)];}while(notes.length>1&&pick.id===lastPulled);
-  lastPulled=pick.id;
+
+function showPulled(n){
   const box=$("pulled"); box.classList.remove("show"); void box.offsetWidth;
-  $("pulledTxt").textContent=pick.text;
-  $("pulledMeta").textContent=`${label(pick)}${fmtDate(pick)?" · "+fmtDate(pick):""}`;
+  $("pulledTxt").textContent=n.text; $("pulledMeta").textContent=meta(n);
   box.classList.add("show");
 }
+function pull(){
+  const pool=notes.filter(n=>!isClosed(n)); if(!pool.length) return;
+  let pick; do{pick=pool[Math.floor(Math.random()*pool.length)];}while(pool.length>1&&pick.id===lastPulled);
+  lastPulled=pick.id; showPulled(pick);
+}
+function openNote(n){
+  opened.add(n.id); LS.set("jar-opened",JSON.stringify([...opened]));
+  render(); showPulled(n); $("pulled").scrollIntoView({behavior:"smooth",block:"center"});
+}
+
+/* ---------- write ---------- */
 async function save(){
   const text=$("text").value.trim();
-  if(!text){$("status").textContent="Write what happened first.";return;}
-  const note={from:who,text,date:$("date").value||"",createdAt:Date.now()};
+  if(!text){$("status").textContent="Write your note first.";return;}
+  const sealed=$("sealIn").checked;
+  const note={from:who,text,createdAt:Date.now(),date:sealed?"":($("date").value||"")};
+  if(sealed){note.sealed=true;note.openWhen=$("owIn").value.trim();note.unlockOn=$("unlockIn").value||"";}
   const id="n"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
   $("saveBtn").disabled=true; $("status").textContent="Folding it in…";
   try{
-    if(local){notes.unshift({id,...note});keep();render();}
-    else{await api.setDoc(api.doc(api.db,"notes",id),note);}
-    $("text").value=""; $("date").value=""; $("status").textContent="It's in the jar.";
+    await fs.setDoc(fs.doc(db,"jars",jar,"notes",id),note);
+    if(who===me){opened.add(id);LS.set("jar-opened",JSON.stringify([...opened]));}
+    ["text","date","owIn","unlockIn"].forEach(k=>$(k).value="");
+    $("sealIn").checked=false; toggleSeal();
+    $("status").textContent=sealed?"Sealed and in the jar.":"It's in the jar.";
   }catch(e){$("status").textContent="That didn't save. Check your connection and try again.";}
   finally{$("saveBtn").disabled=false;}
 }
 async function removeNote(id){
-  try{ if(local){notes=notes.filter(n=>n.id!==id);keep();render();} else {await api.deleteDoc(api.doc(api.db,"notes",id));} }
+  try{await fs.deleteDoc(fs.doc(db,"jars",jar,"notes",id));}
   catch(e){$("status").textContent="Couldn't remove that note.";}
 }
-function goLocal(msg){local=true;notes=loadKept()||[...SEEDS].reverse();keep();if(msg){const b=$("banner");b.style.display="block";b.textContent=msg;}render();}
+function toggleSeal(){
+  const on=$("sealIn").checked;
+  $("sealFields").classList.toggle("show",on); $("dateWrap").style.display=on?"none":"block";
+  $("saveBtn").textContent=on?"Seal it in":"Fold it in";
+}
 
-$("who").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;who=b.dataset.v;[...$("who").children].forEach(x=>x.classList.toggle("on",x===b));});
+/* ---------- people ---------- */
+function setWho(v){who=v;[...$("who").children].forEach(x=>x.classList.toggle("on",x.dataset.v===v));}
+function hello(){
+  const h=$("hello"); h.innerHTML="";
+  if(me){h.append(`Hi ${NAMES[me]} · `);const a=document.createElement("a");a.textContent="not you?";a.onclick=()=>$("whoGate").classList.add("show");h.appendChild(a);h.append(" · ");}
+  const l=document.createElement("a"); l.textContent="lock jar"; l.onclick=()=>{LS.del("jar-key");location.reload();}; h.appendChild(l);
+}
+function computeNew(){
+  if(!me){newIds=new Set();return;}
+  newIds=new Set(notes.filter(n=>n.from!==me&&n.createdAt>seenAt&&n.createdAt>1e6).map(n=>n.id));
+  const b=$("newBanner"), c=newIds.size;
+  if(c){b.textContent=`${NAMES[me==="t"?"d":"t"]} left you ${c} new ${c===1?"note":"notes"}`;b.style.display="block";}
+  else b.style.display="none";
+}
+function markSeen(){ if(me){LS.set("jar-seen-"+me,String(Date.now()));} }
+
+$("whoGate").addEventListener("click",e=>{
+  const b=e.target.closest("button[data-me]"); if(!b) return;
+  me=b.dataset.me; LS.set("jar-me",me); setWho(me);
+  seenAt=Number(LS.get("jar-seen-"+me)||0);
+  $("whoGate").classList.remove("show"); hello(); computeNew(); render(); setTimeout(markSeen,5000);
+});
+
+/* ---------- open the jar ---------- */
+async function connect(){
+  const app=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+  fs=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+  db=fs.getFirestore(app.initializeApp(firebaseConfig));
+}
+async function tryOpen(key){
+  const ref=fs.doc(db,"jars",key);
+  const snap=await fs.getDoc(ref);
+  if(snap.exists()) return true;
+  try{ await fs.setDoc(ref,{createdAt:Date.now()}); await migrate(key); return true; }catch(e){ return false; }
+}
+async function migrate(key){
+  try{
+    const old=await fs.getDocs(fs.collection(db,"notes"));
+    for(const d of old.docs){ const v=d.data(); if(!v.text) continue;
+      await fs.setDoc(fs.doc(db,"jars",key,"notes",d.id),v); await fs.deleteDoc(d.ref).catch(()=>{}); }
+  }catch(e){}
+}
+function listen(){
+  const q=fs.query(fs.collection(db,"jars",jar,"notes"),fs.orderBy("createdAt","desc"));
+  unsub=fs.onSnapshot(q,snap=>{
+    notes=snap.docs.map(d=>({id:d.id,...d.data()})).filter(n=>n.text);
+    if(firstLoad){computeNew();firstLoad=false;setTimeout(markSeen,5000);}
+    render();
+  },()=>{const b=$("banner");b.style.display="block";b.textContent="The jar couldn't load right now. Check your connection and refresh.";});
+}
+async function unlock(code){
+  $("codeErr").textContent=""; $("codeBtn").disabled=true; $("codeBtn").textContent="Opening…";
+  try{
+    const key=await hash(code);
+    if(await tryOpen(key)){ LS.set("jar-key",key); jar=key; $("lockGate").classList.remove("show"); start(); }
+    else $("codeErr").textContent="That code doesn't open this jar.";
+  }catch(e){ $("codeErr").textContent="Couldn't reach the jar. Check your connection."; }
+  $("codeBtn").disabled=false; $("codeBtn").textContent="Open the jar";
+}
+function start(){
+  hello(); listen();
+  if(!me) $("whoGate").classList.add("show");
+}
+
+$("codeBtn").onclick=()=>{const c=$("codeIn").value; if(c.trim()) unlock(c);};
+$("codeIn").addEventListener("keydown",e=>{if(e.key==="Enter")$("codeBtn").click();});
+$("who").addEventListener("click",e=>{const b=e.target.closest("button");if(b)setWho(b.dataset.v);});
 $("filters").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;filter=b.dataset.f;[...$("filters").children].forEach(x=>x.classList.toggle("on",x===b));drawList();});
+$("sealIn").addEventListener("change",toggleSeal);
 $("pullBtn").onclick=pull; $("saveBtn").onclick=save;
 $("addJump").onclick=()=>{$("addCard").scrollIntoView({behavior:"smooth"});setTimeout(()=>$("text").focus(),400);};
+$("newBanner").onclick=()=>{filter="for";[...$("filters").children].forEach(x=>x.classList.toggle("on",x.dataset.f==="for"));drawList();document.querySelector("#list").scrollIntoView({behavior:"smooth"});};
+setWho(who);
 
 (async()=>{
-  if(!firebaseConfig){goLocal("");return;}
-  try{
-    const app=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
-    const fs=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-    const db=fs.getFirestore(app.initializeApp(firebaseConfig));
-    api={db,doc:fs.doc,setDoc:fs.setDoc,deleteDoc:fs.deleteDoc};
-    const q=fs.query(fs.collection(db,"notes"),fs.orderBy("createdAt","desc"));
-    let first=true;
-    fs.onSnapshot(q,snap=>{
-      notes=snap.docs.map(d=>({id:d.id,...d.data()})).filter(n=>n.text);
-      if(first&&notes.some(n=>OLD.includes(n.id))){ OLD.forEach(id=>fs.deleteDoc(fs.doc(db,"notes",id)).catch(()=>{})); SEEDS.forEach(x=>{const {id,...n}=x; fs.setDoc(fs.doc(db,"notes",id),n).catch(()=>{});}); }
-      else if(first&&!notes.length){ SEEDS.forEach(s=>{const {id,...n}=s; fs.setDoc(fs.doc(db,"notes",id),n).catch(()=>{});}); }
-      first=false; render();
-    },()=>goLocal("The jar couldn't reach the internet right now, so notes are being kept on this device."));
-  }catch(e){goLocal("The jar couldn't reach the internet right now, so notes are being kept on this device.");}
+  try{ await connect(); }catch(e){ const b=$("banner");b.style.display="block";b.textContent="The jar couldn't load. Check your connection and refresh."; return; }
+  const key=LS.get("jar-key");
+  if(key){
+    try{ const s=await fs.getDoc(fs.doc(db,"jars",key)); if(s.exists()){jar=key;start();return;} }catch(e){}
+    LS.del("jar-key");
+  }
+  $("lockGate").classList.add("show"); setTimeout(()=>$("codeIn").focus(),100);
 })();
 </script>
 </body>
