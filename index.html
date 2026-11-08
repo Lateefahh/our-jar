@@ -109,7 +109,7 @@
 <div class="wrap">
   <header>
     <h1>Our Jar</h1>
-    <p class="sub">Every kind thing, big or small, folded and kept.<br>Pull one out whenever you need reminding.</p>
+    <p class="sub">Little notes for each other. Sweet things, thank yous,<br>and moments worth keeping. Pull one out whenever you need it.</p>
   </header>
 
   <div class="jar-stage">
@@ -135,14 +135,14 @@
   <div class="banner" id="banner"></div>
 
   <section class="card" id="addCard">
-    <h2>Drop something in</h2><p class="sub" style="text-align:left;margin:0">Big or small, it all counts.</p>
-    <label>Who did the kind thing?</label>
+    <h2>Write a note</h2><p class="sub" style="text-align:left;margin:0">Something sweet, a thank you, anything you want them to keep.</p>
+    <label>Who is writing?</label>
     <div class="who" id="who">
-      <button type="button" class="t on" data-v="t">Teefah</button>
+      <button type="button" class="t on" data-v="t">Latifat</button>
       <button type="button" class="d" data-v="d">David</button>
     </div>
-    <label for="text">What happened?</label>
-    <textarea id="text" maxlength="400" placeholder="He bought me chocolate on our walk, without me asking."></textarea>
+    <label for="text">Your note</label>
+    <textarea id="text" maxlength="400" placeholder="Thank you for the chocolate on our walk today."></textarea>
     <label for="date">When (optional)</label>
     <input type="date" id="date">
     <div class="form-actions"><button id="saveBtn">Fold it in</button></div>
@@ -154,7 +154,7 @@
     <div class="filters" id="filters">
       <button class="on" data-f="all">All</button>
       <button data-f="d">From David</button>
-      <button data-f="t">From Teefah</button>
+      <button data-f="t">From Latifat</button>
     </div>
     <div id="list"><p class="empty">Loading…</p></div>
   </section>
@@ -170,14 +170,17 @@ const firebaseConfig = {
   appId: "1:712608582825:web:a8d62397964fd1083aedb8"
 };
 
-const NAMES={t:"Teefah",d:"David"};
+const NAMES={t:"Latifat",d:"David"};
+const TO={t:"David",d:"Latifat"};
+const label=n=>NAMES[n.from]?`From ${NAMES[n.from]} to ${TO[n.from]}`:"From Someone";
 const SEEDS=[
- {id:"seed1",text:"Took me on our first date, the Amala date, and paid for everything.",createdAt:1},
- {id:"seed2",text:"Buys me a chocolate bar on our weekend walks, without me asking.",createdAt:2},
- {id:"seed3",text:"Bought me chocolate in the middle of class when the girl came round selling. I found it so cute.",createdAt:3},
- {id:"seed4",text:"Apologises when he gets something wrong. I never have to reach a breaking point first.",createdAt:4},
- {id:"seed5",text:"Every time my insecurities come up, he patiently reminds me why we're doing this the way we are.",createdAt:5}
-].map(n=>({...n,from:"d",date:""}));
+ {id:"thanks1",text:"Thank you for our first date, the Amala date. You paid for everything and I still think about it.",createdAt:1},
+ {id:"thanks2",text:"Thank you for the chocolate bars on our weekend walks. You never wait for me to ask.",createdAt:2},
+ {id:"thanks3",text:"Thank you for buying me chocolate in the middle of class. I found it so cute.",createdAt:3},
+ {id:"thanks4",text:"Thank you for always apologising when you get something wrong. It means a lot to me.",createdAt:4},
+ {id:"thanks5",text:"Thank you for patiently reminding me why we're doing this the way we are, every time I get insecure.",createdAt:5}
+].map(n=>({...n,from:"t",date:""}));
+const OLD=["seed1","seed2","seed3","seed4","seed5"];
 const KEY="our-jar-notes";
 function keep(){try{localStorage.setItem(KEY,JSON.stringify(notes));}catch(e){}}
 function loadKept(){try{const v=JSON.parse(localStorage.getItem(KEY));return Array.isArray(v)?v:null;}catch(e){return null;}}
@@ -201,7 +204,7 @@ function drawSlips(){
     box.appendChild(el);
   });
   const c=notes.length, dc=notes.filter(n=>n.from==="d").length;
-  $("count").innerHTML=c?`<b>${c}</b> ${c===1?"note":"notes"} inside · ${dc} from David · ${c-dc} from Teefah`:"The jar is empty. Add the first note below.";
+  $("count").innerHTML=c?`<b>${c}</b> ${c===1?"note":"notes"} inside · ${dc} from David · ${c-dc} from Latifat`:"The jar is empty. Add the first note below.";
   $("pullBtn").disabled=!c;
 }
 function drawList(){
@@ -212,7 +215,7 @@ function drawList(){
     const div=document.createElement("div"); div.className="note "+(n.from==="d"?"d":"t");
     const p=document.createElement("p"); p.textContent=n.text;
     const row=document.createElement("div"); row.className="row";
-    const meta=document.createElement("span"); meta.textContent=`From ${NAMES[n.from]||"Someone"}${fmtDate(n)?" · "+fmtDate(n):""}`;
+    const meta=document.createElement("span"); meta.textContent=`${label(n)}${fmtDate(n)?" · "+fmtDate(n):""}`;
     const del=document.createElement("button"); del.className="del";
     del.textContent=armed===n.id?"Tap again to remove":"Remove";
     del.onclick=()=>{ if(armed===n.id){armed=null;removeNote(n.id);} else {armed=n.id;drawList();} };
@@ -226,7 +229,7 @@ function pull(){
   lastPulled=pick.id;
   const box=$("pulled"); box.classList.remove("show"); void box.offsetWidth;
   $("pulledTxt").textContent=pick.text;
-  $("pulledMeta").textContent=`From ${NAMES[pick.from]||"Someone"}${fmtDate(pick)?" · "+fmtDate(pick):""}`;
+  $("pulledMeta").textContent=`${label(pick)}${fmtDate(pick)?" · "+fmtDate(pick):""}`;
   box.classList.add("show");
 }
 async function save(){
@@ -264,7 +267,8 @@ $("addJump").onclick=()=>{$("addCard").scrollIntoView({behavior:"smooth"});setTi
     let first=true;
     fs.onSnapshot(q,snap=>{
       notes=snap.docs.map(d=>({id:d.id,...d.data()})).filter(n=>n.text);
-      if(first&&!notes.length){ SEEDS.forEach(s=>{const {id,...n}=s; fs.setDoc(fs.doc(db,"notes",id),n).catch(()=>{});}); }
+      if(first&&notes.some(n=>OLD.includes(n.id))){ OLD.forEach(id=>fs.deleteDoc(fs.doc(db,"notes",id)).catch(()=>{})); SEEDS.forEach(x=>{const {id,...n}=x; fs.setDoc(fs.doc(db,"notes",id),n).catch(()=>{});}); }
+      else if(first&&!notes.length){ SEEDS.forEach(s=>{const {id,...n}=s; fs.setDoc(fs.doc(db,"notes",id),n).catch(()=>{});}); }
       first=false; render();
     },()=>goLocal("The jar couldn't reach the internet right now, so notes are being kept on this device."));
   }catch(e){goLocal("The jar couldn't reach the internet right now, so notes are being kept on this device.");}
