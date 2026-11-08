@@ -172,6 +172,9 @@ const SEEDS=[
  {id:"seed4",text:"Apologises when he gets something wrong. I never have to reach a breaking point first.",createdAt:4},
  {id:"seed5",text:"Every time my insecurities come up, he patiently reminds me why we're doing this the way we are.",createdAt:5}
 ].map(n=>({...n,from:"d",date:""}));
+const KEY="our-jar-notes";
+function keep(){try{localStorage.setItem(KEY,JSON.stringify(notes));}catch(e){}}
+function loadKept(){try{const v=JSON.parse(localStorage.getItem(KEY));return Array.isArray(v)?v:null;}catch(e){return null;}}
 let notes=[], who="t", filter="all", api=null, local=false, lastPulled=null, armed=null;
 const $=id=>document.getElementById(id);
 
@@ -227,17 +230,17 @@ async function save(){
   const id="n"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
   $("saveBtn").disabled=true; $("status").textContent="Folding it in…";
   try{
-    if(local){notes.unshift({id,...note});render();}
+    if(local){notes.unshift({id,...note});keep();render();}
     else{await api.setDoc(api.doc(api.db,"notes",id),note);}
     $("text").value=""; $("date").value=""; $("status").textContent="It's in the jar.";
   }catch(e){$("status").textContent="That didn't save. Check your connection and try again.";}
   finally{$("saveBtn").disabled=false;}
 }
 async function removeNote(id){
-  try{ if(local){notes=notes.filter(n=>n.id!==id);render();} else {await api.deleteDoc(api.doc(api.db,"notes",id));} }
+  try{ if(local){notes=notes.filter(n=>n.id!==id);keep();render();} else {await api.deleteDoc(api.doc(api.db,"notes",id));} }
   catch(e){$("status").textContent="Couldn't remove that note.";}
 }
-function goLocal(msg){local=true;notes=[...SEEDS].reverse();const b=$("banner");b.style.display="block";b.textContent=msg;render();}
+function goLocal(msg){local=true;notes=loadKept()||[...SEEDS].reverse();keep();if(msg){const b=$("banner");b.style.display="block";b.textContent=msg;}render();}
 
 $("who").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;who=b.dataset.v;[...$("who").children].forEach(x=>x.classList.toggle("on",x===b));});
 $("filters").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;filter=b.dataset.f;[...$("filters").children].forEach(x=>x.classList.toggle("on",x===b));drawList();});
@@ -245,7 +248,7 @@ $("pullBtn").onclick=pull; $("saveBtn").onclick=save;
 $("addJump").onclick=()=>{$("addCard").scrollIntoView({behavior:"smooth"});setTimeout(()=>$("text").focus(),400);};
 
 (async()=>{
-  if(!firebaseConfig){goLocal("The jar isn't connected to its database yet, so new notes only stay on this screen for now.");return;}
+  if(!firebaseConfig){goLocal("");return;}
   try{
     const app=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
     const fs=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
@@ -257,8 +260,8 @@ $("addJump").onclick=()=>{$("addCard").scrollIntoView({behavior:"smooth"});setTi
       notes=snap.docs.map(d=>({id:d.id,...d.data()})).filter(n=>n.text);
       if(first&&!notes.length){ SEEDS.forEach(s=>{const {id,...n}=s; fs.setDoc(fs.doc(db,"notes",id),n).catch(()=>{});}); }
       first=false; render();
-    },()=>goLocal("The jar couldn't load right now. New notes only stay on this screen."));
-  }catch(e){goLocal("The jar couldn't load right now. New notes only stay on this screen.");}
+    },()=>goLocal("The jar couldn't reach the internet right now, so notes are being kept on this device."));
+  }catch(e){goLocal("The jar couldn't reach the internet right now, so notes are being kept on this device.");}
 })();
 </script>
 </body>
