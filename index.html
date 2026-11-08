@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Our Jar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#4a2c35; --bg:#fbe8ea; --card:#fffaf7; --muted:#9b7480;
+    --rose:#e0798f; --rose-soft:#fbd3dc; --sky:#8ea8d8; --sky-soft:#d9e3f6;
+    --cork:#c9a27a; --line:#f1d2d8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Poppins,system-ui,sans-serif;color:var(--ink);min-height:100vh;padding:34px 20px 70px;
+    background:radial-gradient(circle at 15% 10%,#fff4f0 0,transparent 40%),radial-gradient(circle at 90% 30%,#fde0e6 0,transparent 45%),var(--bg);overflow-x:hidden}
+  .float{position:fixed;pointer-events:none;opacity:.35;z-index:0;animation:drift 9s ease-in-out infinite}
+  @keyframes drift{50%{transform:translateY(-14px) rotate(8deg)}}
+  .wrap{max-width:560px;margin:0 auto;position:relative;z-index:1}
+  header{text-align:center}
+  h1{font-family:Caveat,cursive;font-weight:600;font-size:64px;line-height:1;color:var(--rose)}
+  .sub{color:var(--muted);font-size:14px;margin-top:10px;line-height:1.6}
+
+  /* Jar */
+  .jar-stage{display:flex;justify-content:center;margin:30px 0 14px}
+  .jar{position:relative;width:230px;height:290px;animation:sway 6s ease-in-out infinite}
+  @keyframes sway{50%{transform:rotate(-1.5deg)}}
+  .lid{position:absolute;top:0;left:50%;transform:translateX(-50%);width:128px;height:34px;border-radius:10px 10px 6px 6px;
+    background:repeating-linear-gradient(90deg,#c9a27a 0 6px,#bf966c 6px 12px);box-shadow:inset 0 -4px 0 rgba(0,0,0,.08)}
+  .neck{position:absolute;top:32px;left:50%;transform:translateX(-50%);width:118px;height:20px;background:rgba(255,255,255,.75);border-left:2.5px solid #f3b9c6;border-right:2.5px solid #f3b9c6}
+  .ribbon{position:absolute;top:36px;left:50%;transform:translateX(-50%);width:124px;height:10px;background:var(--rose);border-radius:4px;z-index:3}
+  .bow{position:absolute;top:28px;left:calc(50% + 34px);z-index:4}
+  .bow i{position:absolute;width:20px;height:14px;background:var(--rose);border-radius:50% 50% 50% 50%}
+  .bow i:nth-child(1){left:-18px;transform:rotate(-25deg)}
+  .bow i:nth-child(2){left:6px;transform:rotate(25deg)}
+  .bow b{position:absolute;left:0;top:3px;width:9px;height:9px;border-radius:50%;background:#c95d75}
+  .tag{position:absolute;top:50px;left:calc(50% + 46px);z-index:4;background:var(--card);border:1.5px solid var(--rose);border-radius:6px;
+    font-family:Caveat,cursive;font-size:20px;padding:0 9px;color:var(--rose);transform:rotate(12deg);box-shadow:0 3px 8px rgba(224,121,143,.2)}
+  .body{position:absolute;top:50px;left:0;right:0;bottom:0;border:2.5px solid #f3b9c6;border-radius:46px 46px 60px 60px;
+    background:linear-gradient(160deg,rgba(255,255,255,.85),rgba(255,240,244,.75));overflow:hidden;box-shadow:0 18px 40px rgba(224,121,143,.22),inset 0 0 30px rgba(255,255,255,.9)}
+  .shine{position:absolute;top:22px;left:20px;width:12px;height:130px;border-radius:10px;background:rgba(255,255,255,.95)}
+  .shine2{position:absolute;top:22px;left:40px;width:6px;height:60px;border-radius:10px;background:rgba(255,255,255,.95)}
+  .slips{position:absolute;inset:0}
+  .slip{position:absolute;width:34px;height:20px;border-radius:5px;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+  .slip.t{background:var(--rose-soft)}.slip.d{background:var(--sky-soft)}
+  .slip.heart{width:20px;height:20px;border-radius:0;background:none;box-shadow:none}
+  .slip.heart::before,.slip.heart::after{content:"";position:absolute;width:11px;height:17px;border-radius:11px 11px 0 0;top:0}
+  .slip.heart::before{left:9px;transform:rotate(-45deg);transform-origin:0 100%}
+  .slip.heart::after{left:-2px;transform:rotate(45deg);transform-origin:100% 100%}
+  .slip.heart.t::before,.slip.heart.t::after{background:var(--rose)}
+  .slip.heart.d::before,.slip.heart.d::after{background:var(--sky)}
+  .count{text-align:center;font-size:14px;color:var(--muted)}
+  .count b{color:var(--rose);font-weight:600}
+
+  .btns{display:flex;gap:10px;justify-content:center;margin:20px 0 6px;flex-wrap:wrap}
+  button{font-family:inherit;cursor:pointer;border-radius:999px;font-size:15px;font-weight:500;padding:13px 26px;border:none;
+    background:var(--rose);color:#fff;box-shadow:0 6px 16px rgba(224,121,143,.35);transition:transform .15s}
+  button:active{transform:scale(.96)}
+  button.ghost{background:var(--card);color:var(--rose);box-shadow:0 4px 12px rgba(224,121,143,.15)}
+  button:disabled{opacity:.45;cursor:default}
+
+  /* Pulled note */
+  .pulled{display:none;position:relative;margin:26px 8px;background:var(--card);border-radius:6px;padding:34px 26px 24px;text-align:center;
+    background-image:repeating-linear-gradient(transparent 0 33px,#f6dde2 33px 34px);box-shadow:0 12px 30px rgba(224,121,143,.25);transform:rotate(-1.5deg)}
+  .pulled::before{content:"";position:absolute;top:-12px;left:50%;width:90px;height:24px;transform:translateX(-50%) rotate(-3deg);background:rgba(224,121,143,.45);border-radius:2px}
+  .pulled.show{display:block;animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
+  @keyframes pop{from{transform:translateY(-40px) scale(.7) rotate(-8deg);opacity:0}to{transform:rotate(-1.5deg);opacity:1}}
+  .pulled .txt{font-family:Caveat,cursive;font-size:32px;line-height:34px}
+  .pulled .meta{font-size:13px;color:var(--muted);margin-top:14px}
+
+  /* Cards */
+  section.card{background:var(--card);border-radius:24px;padding:24px;margin-top:26px;box-shadow:0 10px 30px rgba(224,121,143,.15)}
+  h2{font-family:Caveat,cursive;font-size:34px;font-weight:600;color:var(--rose);margin-bottom:6px;line-height:1}
+  label{display:block;font-size:13px;color:var(--muted);margin:14px 0 7px}
+  .who{display:flex;gap:10px}
+  .who button{flex:1;background:#fff;color:var(--ink);border:2px solid var(--line);padding:11px;box-shadow:none}
+  .who button.on.t{border-color:var(--rose);background:var(--rose-soft)}
+  .who button.on.d{border-color:var(--sky);background:var(--sky-soft)}
+  textarea,input[type=date]{width:100%;font-family:inherit;font-size:15px;padding:13px 15px;border:2px solid var(--line);border-radius:14px;background:#fff;color:var(--ink)}
+  textarea{min-height:100px;resize:vertical}
+  textarea:focus,input:focus{outline:none;border-color:var(--rose)}
+  .form-actions{margin-top:18px;display:flex;justify-content:flex-end}
+  .status{font-size:13px;color:var(--muted);margin-top:10px;min-height:18px;text-align:right}
+
+  /* List */
+  .filters{display:flex;gap:8px;margin:10px 0 18px;flex-wrap:wrap}
+  .filters button{padding:8px 16px;font-size:13px;background:#fff;color:var(--ink);border:2px solid var(--line);box-shadow:none}
+  .filters button.on{background:var(--rose);color:#fff;border-color:var(--rose)}
+  #list{display:grid;gap:18px;padding-top:6px}
+  .note{position:relative;padding:22px 18px 14px;border-radius:6px;box-shadow:0 6px 14px rgba(74,44,53,.08)}
+  .note.t{background:#fff0f3}.note.d{background:#eef3fc}
+  .note:nth-child(odd){transform:rotate(-1deg)}.note:nth-child(even){transform:rotate(1deg)}
+  .note::before{content:"";position:absolute;top:-9px;left:24px;width:62px;height:18px;transform:rotate(-4deg);border-radius:2px}
+  .note.t::before{background:rgba(224,121,143,.4)}.note.d::before{background:rgba(142,168,216,.5)}
+  .note p{font-family:Caveat,cursive;font-size:25px;line-height:1.2}
+  .note .row{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:12px;color:var(--muted)}
+  .note .del{background:none;border:none;box-shadow:none;color:var(--muted);font-size:12px;padding:0;text-decoration:underline}
+  .empty{color:var(--muted);font-size:14px;text-align:center;padding:18px 0;line-height:1.6}
+  .banner{display:none;background:#fff4e6;border-radius:14px;padding:12px 14px;font-size:13px;margin-top:16px;line-height:1.5;color:#8a5a1f}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs><path id="h" d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 5 6.4 5c2 0 3.6 1.2 4.6 2.7C12 6.2 13.6 5 15.6 5 19 5 21.1 8.4 19.6 11.8 17.5 16.4 12 21 12 21z"/></defs></svg>
+<svg class="float" viewBox="0 0 24 24" style="top:8%;left:6%;width:26px;fill:#e0798f"><use href="#h"/></svg>
+<svg class="float" viewBox="0 0 24 24" style="top:22%;right:8%;width:18px;fill:#8ea8d8;animation-delay:-3s"><use href="#h"/></svg>
+<svg class="float" viewBox="0 0 24 24" style="top:58%;left:4%;width:16px;fill:#8ea8d8;animation-delay:-5s"><use href="#h"/></svg>
+<svg class="float" viewBox="0 0 24 24" style="top:78%;right:6%;width:24px;fill:#e0798f;animation-delay:-2s"><use href="#h"/></svg>
+<div class="wrap">
+  <header>
+    <h1>Our Jar</h1>
+    <p class="sub">Every kind thing, big or small, folded and kept.<br>Pull one out whenever you need reminding.</p>
+  </header>
+
+  <div class="jar-stage">
+    <div class="jar" aria-hidden="true">
+      <div class="lid"></div><div class="neck"></div>
+      <div class="body"><div class="slips" id="slips"></div><div class="shine"></div><div class="shine2"></div></div>
+      <div class="ribbon"></div><div class="bow"><i></i><i></i><b></b></div>
+      <div class="tag">us</div>
+    </div>
+  </div>
+  <p class="count" id="count">Opening the jar…</p>
+
+  <div class="btns">
+    <button id="pullBtn" disabled>Pull a note</button>
+    <button class="ghost" id="addJump">Add a note</button>
+  </div>
+
+  <div class="pulled" id="pulled">
+    <div class="txt" id="pulledTxt"></div>
+    <div class="meta" id="pulledMeta"></div>
+  </div>
+
+  <div class="banner" id="banner"></div>
+
+  <section class="card" id="addCard">
+    <h2>Drop something in</h2><p class="sub" style="text-align:left;margin:0">Big or small, it all counts.</p>
+    <label>Who did the kind thing?</label>
+    <div class="who" id="who">
+      <button type="button" class="t on" data-v="t">Teefah</button>
+      <button type="button" class="d" data-v="d">David</button>
+    </div>
+    <label for="text">What happened?</label>
+    <textarea id="text" maxlength="400" placeholder="He bought me chocolate on our walk, without me asking."></textarea>
+    <label for="date">When (optional)</label>
+    <input type="date" id="date">
+    <div class="form-actions"><button id="saveBtn">Fold it in</button></div>
+    <div class="status" id="status"></div>
+  </section>
+
+  <section class="card">
+    <h2>Everything in the jar</h2>
+    <div class="filters" id="filters">
+      <button class="on" data-f="all">All</button>
+      <button data-f="d">From David</button>
+      <button data-f="t">From Teefah</button>
+    </div>
+    <div id="list"><p class="empty">Loading…</p></div>
+  </section>
+</div>
+
+<script type="module">
+// Paste the firebaseConfig from Firebase here:
+const firebaseConfig = null;
+
+const NAMES={t:"Teefah",d:"David"};
+const SEEDS=[
+ {id:"seed1",text:"Took me on our first date, the Amala date, and paid for everything.",createdAt:1},
+ {id:"seed2",text:"Buys me a chocolate bar on our weekend walks, without me asking.",createdAt:2},
+ {id:"seed3",text:"Bought me chocolate in the middle of class when the girl came round selling. I found it so cute.",createdAt:3},
+ {id:"seed4",text:"Apologises when he gets something wrong. I never have to reach a breaking point first.",createdAt:4},
+ {id:"seed5",text:"Every time my insecurities come up, he patiently reminds me why we're doing this the way we are.",createdAt:5}
+].map(n=>({...n,from:"d",date:""}));
+let notes=[], who="t", filter="all", api=null, local=false, lastPulled=null, armed=null;
+const $=id=>document.getElementById(id);
+
+function fmtDate(n){
+  const s=n.date||(n.createdAt>1000?new Date(n.createdAt).toISOString().slice(0,10):"");
+  if(!s) return "";
+  return new Date(s+"T12:00:00").toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"});
+}
+function drawSlips(){
+  const box=$("slips"); box.innerHTML="";
+  notes.slice(0,40).forEach((n,i)=>{
+    const el=document.createElement("div");
+    el.className="slip "+(n.from==="d"?"d":"t")+(i%3===1?" heart":"");
+    const row=Math.floor(i/5), col=i%5;
+    el.style.left=Math.min(8+col*38+(row%2?16:0)+((i*7)%9)-4,170)+"px";
+    el.style.bottom=Math.min(10+row*17+((i*5)%6),200)+"px";
+    el.style.transform="rotate("+(((i*37)%50)-25)+"deg)";
+    box.appendChild(el);
+  });
+  const c=notes.length, dc=notes.filter(n=>n.from==="d").length;
+  $("count").innerHTML=c?`<b>${c}</b> ${c===1?"note":"notes"} inside · ${dc} from David · ${c-dc} from Teefah`:"The jar is empty. Add the first note below.";
+  $("pullBtn").disabled=!c;
+}
+function drawList(){
+  const list=$("list"); list.innerHTML="";
+  const items=notes.filter(n=>filter==="all"||n.from===filter);
+  if(!items.length){const p=document.createElement("p");p.className="empty";p.textContent="Nothing here yet.";list.appendChild(p);return;}
+  items.forEach(n=>{
+    const div=document.createElement("div"); div.className="note "+(n.from==="d"?"d":"t");
+    const p=document.createElement("p"); p.textContent=n.text;
+    const row=document.createElement("div"); row.className="row";
+    const meta=document.createElement("span"); meta.textContent=`From ${NAMES[n.from]||"Someone"}${fmtDate(n)?" · "+fmtDate(n):""}`;
+    const del=document.createElement("button"); del.className="del";
+    del.textContent=armed===n.id?"Tap again to remove":"Remove";
+    del.onclick=()=>{ if(armed===n.id){armed=null;removeNote(n.id);} else {armed=n.id;drawList();} };
+    row.append(meta,del); div.append(p,row); list.appendChild(div);
+  });
+}
+function render(){drawSlips();drawList();}
+function pull(){
+  if(!notes.length) return;
+  let pick; do{pick=notes[Math.floor(Math.random()*notes.length)];}while(notes.length>1&&pick.id===lastPulled);
+  lastPulled=pick.id;
+  const box=$("pulled"); box.classList.remove("show"); void box.offsetWidth;
+  $("pulledTxt").textContent=pick.text;
+  $("pulledMeta").textContent=`From ${NAMES[pick.from]||"Someone"}${fmtDate(pick)?" · "+fmtDate(pick):""}`;
+  box.classList.add("show");
+}
+async function save(){
+  const text=$("text").value.trim();
+  if(!text){$("status").textContent="Write what happened first.";return;}
+  const note={from:who,text,date:$("date").value||"",createdAt:Date.now()};
+  const id="n"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  $("saveBtn").disabled=true; $("status").textContent="Folding it in…";
+  try{
+    if(local){notes.unshift({id,...note});render();}
+    else{await api.setDoc(api.doc(api.db,"notes",id),note);}
+    $("text").value=""; $("date").value=""; $("status").textContent="It's in the jar.";
+  }catch(e){$("status").textContent="That didn't save. Check your connection and try again.";}
+  finally{$("saveBtn").disabled=false;}
+}
+async function removeNote(id){
+  try{ if(local){notes=notes.filter(n=>n.id!==id);render();} else {await api.deleteDoc(api.doc(api.db,"notes",id));} }
+  catch(e){$("status").textContent="Couldn't remove that note.";}
+}
+function goLocal(msg){local=true;notes=[...SEEDS].reverse();const b=$("banner");b.style.display="block";b.textContent=msg;render();}
+
+$("who").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;who=b.dataset.v;[...$("who").children].forEach(x=>x.classList.toggle("on",x===b));});
+$("filters").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;filter=b.dataset.f;[...$("filters").children].forEach(x=>x.classList.toggle("on",x===b));drawList();});
+$("pullBtn").onclick=pull; $("saveBtn").onclick=save;
+$("addJump").onclick=()=>{$("addCard").scrollIntoView({behavior:"smooth"});setTimeout(()=>$("text").focus(),400);};
+
+(async()=>{
+  if(!firebaseConfig){goLocal("The jar isn't connected to its database yet, so new notes only stay on this screen for now.");return;}
+  try{
+    const app=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+    const fs=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    const db=fs.getFirestore(app.initializeApp(firebaseConfig));
+    api={db,doc:fs.doc,setDoc:fs.setDoc,deleteDoc:fs.deleteDoc};
+    const q=fs.query(fs.collection(db,"notes"),fs.orderBy("createdAt","desc"));
+    let first=true;
+    fs.onSnapshot(q,snap=>{
+      notes=snap.docs.map(d=>({id:d.id,...d.data()})).filter(n=>n.text);
+      if(first&&!notes.length){ SEEDS.forEach(s=>{const {id,...n}=s; fs.setDoc(fs.doc(db,"notes",id),n).catch(()=>{});}); }
+      first=false; render();
+    },()=>goLocal("The jar couldn't load right now. New notes only stay on this screen."));
+  }catch(e){goLocal("The jar couldn't load right now. New notes only stay on this screen.");}
+})();
+</script>
+</body>
+</html>
