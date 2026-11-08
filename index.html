@@ -174,13 +174,18 @@ const NAMES={t:"Latifat",d:"David"};
 const TO={t:"David",d:"Latifat"};
 const label=n=>NAMES[n.from]?`From ${NAMES[n.from]} to ${TO[n.from]}`:"From Someone";
 const SEEDS=[
- {id:"thanks1",text:"Thank you for our first date, the Amala date. You paid for everything and I still think about it.",createdAt:1},
- {id:"thanks2",text:"Thank you for the chocolate bars on our weekend walks. You never wait for me to ask.",createdAt:2},
- {id:"thanks3",text:"Thank you for buying me chocolate in the middle of class. I found it so cute.",createdAt:3},
- {id:"thanks4",text:"Thank you for always apologising when you get something wrong. It means a lot to me.",createdAt:4},
- {id:"thanks5",text:"Thank you for patiently reminding me why we're doing this the way we are, every time I get insecure.",createdAt:5}
+ {id:"mem1",text:"Our first date was Amala. I still think about that day.",createdAt:10},
+ {id:"mem2",text:"The chocolate bars on our weekend walks. You never wait for me to ask.",createdAt:9},
+ {id:"mem3",text:"That time you bought me chocolate in the middle of class. Cutest thing ever.",createdAt:8},
+ {id:"mem4",text:"Our movie date. One of my favourite memories with you.",createdAt:7},
+ {id:"mem5",text:"You always apologise when you get something wrong.",createdAt:6},
+ {id:"mem6",text:"Every time my insecurities come up, you patiently remind me why we're doing this the way we are.",createdAt:5},
+ {id:"mem7",text:"We talk about everything, even the hardest things. I feel safe telling you anything.",createdAt:4},
+ {id:"mem8",text:"I love your smile. It makes everything feel lighter.",createdAt:3},
+ {id:"mem9",text:"Your long hugs. My favourite place to be.",createdAt:2},
+ {id:"mem10",text:"You're the sweetest person I know. Sometimes I really think God sent you.",createdAt:1}
 ].map(n=>({...n,from:"t",date:""}));
-const OLD=["seed1","seed2","seed3","seed4","seed5"];
+const OLD=["seed1","seed2","seed3","seed4","seed5","thanks1","thanks2","thanks3","thanks4","thanks5"];
 const KEY="our-jar-notes";
 function keep(){try{localStorage.setItem(KEY,JSON.stringify(notes));}catch(e){}}
 function loadKept(){try{const v=JSON.parse(localStorage.getItem(KEY));return Array.isArray(v)?v:null;}catch(e){return null;}}
